@@ -5,6 +5,13 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+ROOM_TYPE_CHOICES = (
+    ('Standart', 'Стандарт'),
+    ('Luxury', 'Люкс'),
+    ('President', 'Президент'),
+)
+
+
 STATUS_ROOM_CHOICES = (
     ('checked_out', 'Выселен'),
     ('checked_in', 'Заселен'),
@@ -14,8 +21,13 @@ STATUS_ROOM_CHOICES = (
 
 
 class RoomType(models.Model):
-    """Модель типа номера(Стандарт, Люкс, Президент)"""
-    name = models.CharField('Название типа номера', max_length=64, unique=True)
+    """Модель типа номера"""
+    name = models.CharField(
+        'Название типа номера',
+        max_length=64,
+        choices=ROOM_TYPE_CHOICES,
+        default='Стандарт'
+    )
     description = models.TextField('Описание типа номера', blank=True)
 
     class Meta:
@@ -23,7 +35,7 @@ class RoomType(models.Model):
         verbose_name_plural = 'Типы номеров'
 
     def __str__(self):
-        return self.name
+        return self.get_name_display()
 
 
 class Room(models.Model):
@@ -64,7 +76,7 @@ class Room(models.Model):
         return f'Номер {self.title} - {self.room_type} создан'
 
 
-class Booking (models.Model):
+class Booking(models.Model):
     """Модель бронирования номера"""
     user = models.ForeignKey(
         User,
@@ -79,7 +91,7 @@ class Booking (models.Model):
     check_in = models.DateField('Дата заезда')
     check_out = models.DateField('Дата выселения')
     status = models.CharField(
-        'Сттатус брони',
+        'Статус брони',
         max_length=64,
         choices=STATUS_ROOM_CHOICES,
         default='Забронировано'
