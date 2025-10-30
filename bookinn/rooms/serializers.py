@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from rooms.models import Booking, Room, RoomType
 
@@ -8,6 +9,14 @@ class RoomTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomType
         fields = ('id', 'name', 'description')
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=RoomType.objects.all(),
+                fields=('name'),
+                message='Такой тип номера уже сущеествует.'
+            )
+        ]
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -45,3 +54,5 @@ class BookingSerializer(serializers.ModelSerializer):
             'status',
             'created_at'
         )
+
+        # validators = 
