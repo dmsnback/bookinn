@@ -26,13 +26,14 @@ class RoomType(models.Model):
         'Название типа номера',
         max_length=64,
         choices=ROOM_TYPE_CHOICES,
-        default='Стандарт'
+        default='Standart'
     )
     description = models.TextField('Описание типа номера', blank=True)
 
     class Meta:
         verbose_name = 'Тип номера'
         verbose_name_plural = 'Типы номеров'
+        unique_together = ('name',)
 
     def __str__(self):
         return self.get_name_display()
@@ -49,7 +50,7 @@ class Room(models.Model):
         verbose_name='Тип номера',
         related_name='rooms'
     )
-    is_avialible = models.BooleanField('Статус номера', default=True)
+    is_available = models.BooleanField('Статус номера', default=True)
     price = models.DecimalField(
         'Цена за сутки',
         max_digits=8,
@@ -68,12 +69,12 @@ class Room(models.Model):
     )
 
     class Meta:
-        ordering = ['title', 'is_avialible']
+        ordering = ['title',]
         verbose_name = 'Номер'
         verbose_name_plural = 'Номера'
 
     def __str__(self):
-        return f'Номер {self.title} - {self.room_type} создан'
+        return f'{self.title} - {self.room_type}'
 
 
 class Booking(models.Model):
@@ -94,7 +95,7 @@ class Booking(models.Model):
         'Статус брони',
         max_length=64,
         choices=STATUS_ROOM_CHOICES,
-        default='Забронировано'
+        default='booked'
     )
     created_at = models.DateTimeField(
         'Дата создания бронирования',
