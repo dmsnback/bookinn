@@ -61,9 +61,7 @@ class Room(models.Model):
     price = models.DecimalField(
         'Цена за сутки',
         max_digits=8,
-        decimal_places=2,
-        null=True,
-        blank=True
+        decimal_places=2
     )
     capacity = models.PositiveSmallIntegerField('Вместимость', default=1)
     number_of_rooms = models.PositiveSmallIntegerField(
@@ -79,13 +77,19 @@ class Room(models.Model):
         ordering = ['title',]
         verbose_name = 'Номер'
         verbose_name_plural = 'Номера'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['title', 'room_type'],
+                name='unique_title',
+            )
+        ]
 
     def __str__(self):
         return f'{self.title} - {self.room_type}'
     
     def is_available_for_period(self, check_in, check_out):
         '''Вернет True, если номер свободен на указанный период'''
-        bookings = self.bookings.filer(
+        bookings = self.bookings.filter(
             check_in__lt=check_out,
             check_out__gt=check_in
         ).exclude(status='cancelled')
