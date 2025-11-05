@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -101,12 +101,14 @@ class Booking(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='bookings'
+        related_name='bookings',
+        verbose_name='Гость'
     )
     room = models.ForeignKey(
         Room,
         on_delete=models.CASCADE,
-        related_name='bookings'
+        related_name='bookings',
+        verbose_name='Номер'
     )
     check_in = models.DateField('Дата заезда')
     check_out = models.DateField('Дата выселения')
@@ -144,7 +146,7 @@ class Booking(models.Model):
 
     def clean(self):
         '''Валидация на уровне модели'''
-        if self.check_in < datetime.now():
+        if self.check_in < date.today():
             raise ValidationError(
                 'Дата заезда не должна быть раньше текущей даты'
             )
