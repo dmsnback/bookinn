@@ -8,7 +8,7 @@ from rooms.views import BookingViewSet, RoomViewSet, RoomTypeViewSet
 router = DefaultRouter()
 router.register(r'rooms', RoomViewSet)
 router.register(r'room_type', RoomTypeViewSet)
-router.register(r'bookings', BookingViewSet)
+router.register(r'bookings', BookingViewSet, basename='bookings')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

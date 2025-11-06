@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import permissions, viewsets
 
 from rooms.models import Booking, Room, RoomType
 from rooms.serializers import (
@@ -19,5 +19,14 @@ class RoomViewSet(viewsets.ModelViewSet):
 
 
 class BookingViewSet(viewsets.ModelViewSet):
-    queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return Booking.objects.all()
+        return Booking.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
