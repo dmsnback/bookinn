@@ -2,6 +2,7 @@ from datetime import date
 
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 
 
 User = get_user_model()
@@ -146,6 +147,10 @@ class Booking(models.Model):
 
     def clean(self):
         '''Валидация на уровне модели'''
+        if not self.room.is_available:
+            raise ValidationError(
+                'Номер недоступен.'
+            )
         if self.check_in < date.today():
             raise ValidationError(
                 'Дата заезда не должна быть раньше текущей даты'
