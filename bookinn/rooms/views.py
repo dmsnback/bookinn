@@ -1,6 +1,7 @@
 from rest_framework import permissions, viewsets
 
 from rooms.models import Booking, Room, RoomType
+from rooms.permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
 from rooms.serializers import (
     BookingSerializer,
     RoomSerializer,
@@ -11,16 +12,19 @@ from rooms.serializers import (
 class RoomTypeViewSet(viewsets.ModelViewSet):
     queryset = RoomType.objects.all()
     serializer_class = RoomTypeSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
+    permission_classes = (permissions.AllowAny, IsAdminOrReadOnly,)
 
 
 class BookingViewSet(viewsets.ModelViewSet):
+    queryset = Booking.objects.all()
     serializer_class = BookingSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsOwnerOrAdmin)
 
     def get_queryset(self):
         user = self.request.user
