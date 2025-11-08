@@ -52,7 +52,7 @@ class RoomSerializer(serializers.ModelSerializer):
             )
         ]
 
-    def validate_prrice(self, value):
+    def validate_price(self, value):
         '''Проверка, что цена за номер больше 0'''
         if value is not None and value <= 0:
             raise serializers.ValidationError('Цена должна быть больше 0')
@@ -85,7 +85,10 @@ class BookingSerializer(serializers.ModelSerializer):
                 'Дата выселения должна быть позже даты заезда.'
             )
         room = data['room']
-        if room.is_available_for_period(data['check_in'], data['check_out']):
+        if not room.is_available_for_period(
+            data['check_in'],
+            data['check_out']
+        ):
             raise serializers.ValidationError(
                 'Номер уже забронирован на этот период'
             )

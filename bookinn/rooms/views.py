@@ -25,6 +25,7 @@ class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     permission_classes = (permissions.IsAuthenticated, IsOwnerOrAdmin)
+    # permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
         user = self.request.user
