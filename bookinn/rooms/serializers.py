@@ -85,6 +85,10 @@ class BookingSerializer(serializers.ModelSerializer):
                 'Дата выселения должна быть позже даты заезда.'
             )
         room = data['room']
+        if not room.is_available:
+            raise serializers.ValidationError(
+                'Номер не доступен'
+            )
         if not room.is_available_for_period(
             data['check_in'],
             data['check_out']
