@@ -16,20 +16,22 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
 
 
 class RoomViewSet(viewsets.ModelViewSet):
-    queryset = Room.objects.all()
     serializer_class = RoomSerializer
-    permission_classes = (permissions.AllowAny, IsAdminOrReadOnly,)
+    permission_classes = (permissions.AllowAny, IsAdminOrReadOnly)
+
+    def get_queryset(self):
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return Room.objects.all()
+        return Room.objects.filter(is_available=True)
 
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     permission_classes = (permissions.IsAuthenticated, IsOwnerOrAdmin)
-    # permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
-        user = self.request.user
-        if user.is_staff or user.is_superuser:
+        if self.request.user.is_staff or self.request.user.is_superuser:
             return Booking.objects.all()
         return Booking.objects.filter(user=self.request.user)
 
