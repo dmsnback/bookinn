@@ -43,7 +43,7 @@ class RoomSerializer(serializers.ModelSerializer):
             'capacity',
             'number_of_rooms'
         )
-        read_only_fields = ('id', 'is_available')
+        read_only_fields = ('id',)
         validators = [
             UniqueTogetherValidator(
                 queryset=Room.objects.all(),
