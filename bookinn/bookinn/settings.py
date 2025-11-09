@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'rooms.apps.RoomsConfig',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
