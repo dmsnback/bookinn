@@ -61,6 +61,7 @@ class RoomAdmin(admin.ModelAdmin):
     list_filter = (
         'title',
         'room_type',
+        'price',
         'is_available',
         'number_of_rooms',
         'capacity'

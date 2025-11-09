@@ -1,4 +1,5 @@
-from rest_framework import permissions, viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, permissions, viewsets
 
 from rooms.models import Booking, Room, RoomType
 from rooms.permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
@@ -13,11 +14,33 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
     queryset = RoomType.objects.all()
     serializer_class = RoomTypeSerializer
     permission_classes = (permissions.IsAdminUser,)
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = ('name',)
 
 
 class RoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
     permission_classes = (permissions.AllowAny, IsAdminOrReadOnly)
+    filter_backends = (
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter
+    )
+    filterset_fields = (
+        'room_type',
+        'is_available',
+        'number_of_rooms',
+        'capacity'
+    )
+    search_fields = ('title', 'description', 'room_type__name')
+    ordering_fields = (
+        'title',
+        'room_type',
+        'is_available',
+        'price',
+        'number_of_rooms',
+        'capacity'
+    )
 
     def get_queryset(self):
         if self.request.user.is_staff or self.request.user.is_superuser:
@@ -29,6 +52,14 @@ class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     permission_classes = (permissions.IsAuthenticated, IsOwnerOrAdmin)
+    filter_backends = (
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter
+    )
+    filterset_fields = ('status', 'room', 'user')
+    search_fields = ('status',)
+    ordering_fields = ('status', 'check_in', 'check_out')
 
     def get_queryset(self):
         if self.request.user.is_staff or self.request.user.is_superuser:
