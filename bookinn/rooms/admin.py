@@ -1,11 +1,18 @@
 from django.contrib import admin
 
-from .models import Booking, Room, RoomType
+from .models import Booking, Room, RoomImage, RoomType
 
 
 class RoomInline(admin.TabularInline):
     model = Room
     extra = 0
+
+
+class RoomImageInline(admin.TabularInline):
+    model = RoomImage
+    extra = 1
+    fields = ('image_tag', 'image')
+    readonly_fields = ('image_tag',)
 
 
 class BookingAdmin(admin.ModelAdmin):
@@ -17,26 +24,15 @@ class BookingAdmin(admin.ModelAdmin):
         'status',
         'created_at',
     )
-    list_editable = (
-        'check_in',
-        'check_out',
-        'status'
-    )
-    search_fields = (
-        'status',
-        'room',
-        'user'
-    )
-    list_filter = (
-        'status',
-        'room',
-        'user'
-    )
+    list_editable = ('check_in', 'check_out', 'status')
+    search_fields = ('status', 'room', 'user')
+    list_filter = ('status', 'room', 'user')
     list_display_links = ('room',)
     empty_value_display = 'Не задано'
 
 
 class RoomAdmin(admin.ModelAdmin):
+    inlines = (RoomImageInline,)
     list_display = (
         'title',
         'room_type',
@@ -46,11 +42,7 @@ class RoomAdmin(admin.ModelAdmin):
         'capacity',
         'created_at'
     )
-    list_editable = (
-        'room_type',
-        'is_available',
-        'price'
-    )
+    list_editable = ('room_type', 'is_available', 'price')
     search_fields = (
         'title',
         'room_type',
@@ -71,9 +63,7 @@ class RoomAdmin(admin.ModelAdmin):
 
 
 class RoomTypeAdmin(admin.ModelAdmin):
-    inlines = (
-        RoomInline,
-    )
+    inlines = (RoomInline,)
     list_display = ('name', 'description')
     search_fields = ('name',)
     list_filter = ('name',)
@@ -81,6 +71,16 @@ class RoomTypeAdmin(admin.ModelAdmin):
     empty_value_display = 'Не задано'
 
 
+class RoomImageAdmin(admin.ModelAdmin):
+    list_display = ('room', 'image_tag', 'uploaded_at')
+    search_fields = ('room', 'image_tag')
+    search_fields = ('room', 'image_tag')
+    list_filter = ('room',)
+    list_display_links = ('room', 'image_tag')
+    empty_value_display = 'Не задано'
+
+
 admin.site.register(Booking, BookingAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(RoomType, RoomTypeAdmin)
+admin.site.register(RoomImage, RoomImageAdmin)
