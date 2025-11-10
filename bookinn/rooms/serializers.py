@@ -37,6 +37,11 @@ class RoomSerializer(serializers.ModelSerializer):
         write_only=True,
         help_text='Выберите тип номера'
     )
+    image = serializers.ImageField(
+        write_only=True,
+        required=False,
+        help_text='Добавте фото для комнаты'
+    )
     images = RoomImageSerializer(many=True, read_only=True)
 
     class Meta:
@@ -51,7 +56,8 @@ class RoomSerializer(serializers.ModelSerializer):
             'price',
             'capacity',
             'number_of_rooms',
-            'images',
+            'image',
+            'images'
         )
         read_only_fields = ('id',)
         validators = [
@@ -67,6 +73,13 @@ class RoomSerializer(serializers.ModelSerializer):
         if value is not None and value <= 0:
             raise serializers.ValidationError('Цена должна быть больше 0')
         return value
+
+    def create(self, validated_data):
+        image = validated_data.pop('image', None)
+        room = Room.objects.create(**validated_data)
+        if image:
+            RoomImage.objects.create(room=room, image=image)
+        return room
 
 
 class BookingSerializer(serializers.ModelSerializer):
