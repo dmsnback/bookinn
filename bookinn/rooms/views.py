@@ -1,11 +1,12 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, viewsets
 
-from rooms.models import Booking, Room, RoomType
+from rooms.models import Booking, Room, RoomImage, RoomType
 from rooms.permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
 from rooms.serializers import (
     BookingSerializer,
     RoomSerializer,
+    RoomImageSerializer,
     RoomTypeSerializer
 )
 
@@ -16,6 +17,12 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAdminUser,)
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('name',)
+
+
+class RoomImageViewSet(viewsets.ModelViewSet):
+    queryset = RoomImage.objects.all()
+    serializer_class = RoomImageSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class RoomViewSet(viewsets.ModelViewSet):

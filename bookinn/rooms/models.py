@@ -3,6 +3,9 @@ from datetime import date
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
+
+from .utils import room_image_upload_path
 
 
 User = get_user_model()
@@ -44,7 +47,7 @@ class RoomType(models.Model):
         ]
 
     def __str__(self):
-        return self.get_name_display()
+        return self.name
 
 
 class Room(models.Model):
@@ -87,7 +90,7 @@ class Room(models.Model):
 
     def __str__(self):
         return f'{self.title} - {self.room_type}'
-    
+
     def is_available_for_period(self, check_in, check_out):
         '''Вернет True, если номер свободен на указанный период'''
         bookings = self.bookings.filter(
@@ -95,6 +98,46 @@ class Room(models.Model):
             check_out__gt=check_in
         ).exclude(status='cancelled')
         return not bookings.exists()
+
+
+class RoomImage(models.Model):
+    """Фотографии номеров"""
+    room = models.ForeignKey(
+        Room,
+        on_delete=models.CASCADE,
+        related_name='images',
+        verbose_name='Номер',
+        help_text='Номер к которому привязано фото'
+    )
+    image = models.ImageField(
+        'Фотография',
+        upload_to=room_image_upload_path,
+        help_text='Загрузите фотографию'
+    )
+    uploaded_at = models.DateTimeField(
+        'Дата загрузки фото',
+        auto_now_add=True
+    )
+
+    class Meta:
+        verbose_name = 'Фотография номера'
+        verbose_name_plural = 'Фотографии номеров'
+        ordering = ['-uploaded_at']
+
+    def __str__(self):
+        return f'Фотография для: {self.room.title}'
+
+    def image_tag(self):
+        """Миниатюра фотографии в админке"""
+        if self.image:
+            return mark_safe(
+                f'<img src="{self.image.url}" '
+                f'width="100" style="border-radius: 8px;"/>'
+            )
+                
+        return 'Нет фотографий номера'
+    image_tag.allow_tags = True
+    image_tag.short_description = 'Превью'
 
 
 class Booking(models.Model):

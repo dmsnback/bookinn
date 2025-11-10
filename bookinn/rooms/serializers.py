@@ -3,7 +3,7 @@ from datetime import date
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from rooms.models import Booking, Room, RoomType
+from rooms.models import Booking, Room, RoomImage,  RoomType
 
 
 class RoomTypeSerializer(serializers.ModelSerializer):
@@ -15,10 +15,18 @@ class RoomTypeSerializer(serializers.ModelSerializer):
         validators = [
             UniqueTogetherValidator(
                 queryset=RoomType.objects.all(),
-                fields=('name'),
+                fields=('name',),
                 message='Такой тип номера уже сущеествует.'
             )
         ]
+
+
+class RoomImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RoomImage
+        fields = ('id', 'room', 'image', 'uploaded_at')
+        read_only_fields = ('id', 'uploaded_at')
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -29,6 +37,7 @@ class RoomSerializer(serializers.ModelSerializer):
         write_only=True,
         help_text='Выберите тип номера'
     )
+    images = RoomImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Room
@@ -41,7 +50,8 @@ class RoomSerializer(serializers.ModelSerializer):
             'is_available',
             'price',
             'capacity',
-            'number_of_rooms'
+            'number_of_rooms',
+            'images',
         )
         read_only_fields = ('id',)
         validators = [
