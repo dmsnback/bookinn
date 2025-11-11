@@ -37,6 +37,11 @@ class RoomSerializer(serializers.ModelSerializer):
         write_only=True,
         help_text='Выберите тип номера'
     )
+    image = serializers.ImageField(
+        write_only=True,
+        required=False,
+        help_text='Добавьте фото для номеера'
+    )
     images = RoomImageSerializer(many=True, read_only=True)
 
     class Meta:
@@ -51,6 +56,7 @@ class RoomSerializer(serializers.ModelSerializer):
             'price',
             'capacity',
             'number_of_rooms',
+            'image',
             'images',
         )
         read_only_fields = ('id',)
@@ -68,6 +74,25 @@ class RoomSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Цена должна быть больше 0')
         return value
 
+    def create(self, validated_data):
+        if 'image' not in self.initial_data:
+            room = Room.objects.create(**validated_data)
+            return room
+        image = validated_data.pop('image', None)
+        room = Room.objects.create(**validated_data)
+        if image:
+            RoomImage.objects.create(room=room, image=image)
+        return room
+
+    def update(self, instance, validated_data):
+        image = validated_data.pop('image', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        if image:
+            RoomImage.objects.create(room=instance, image=image)
+        return instance
+
 
 class BookingSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
@@ -83,25 +108,27 @@ class BookingSerializer(serializers.ModelSerializer):
             'status',
             'created_at'
         )
-        read_only_fields = ('status', 'created_at')
+        read_only_fields = ('created_at',)
 
     def validate(self, data):
-        if data['check_in'] < date.today():
+        check_in = data.get('check_in')
+        check_out = data.get('check_out')
+        room = data.get('room')
+        if check_in < date.today():
             raise serializers.ValidationError(
                 'Дата заезда не должна быть раньше текущей даты'
             )
-        if data['check_out'] < data['check_in']:
+        if check_out < check_in:
             raise serializers.ValidationError(
                 'Дата выселения должна быть позже даты заезда.'
             )
-        room = data['room']
         if not room.is_available:
             raise serializers.ValidationError(
                 'Номер не доступен'
             )
         if not room.is_available_for_period(
-            data['check_in'],
-            data['check_out']
+            check_in,
+            check_out
         ):
             raise serializers.ValidationError(
                 'Номер уже забронирован на этот период'
