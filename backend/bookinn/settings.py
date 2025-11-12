@@ -119,7 +119,15 @@ REST_FRAMEWORK = {
         'user': '10000/day',
         'anon': '1000/day'
     },
-
+    'DATE_INPUT_FORMATS': [
+        '%d.%m.%Y',
+        '%d-%m-%Y',
+        '%Y.%m.%d',
+        '%Y-%m-%d'
+    ],
+    'DATETIME_FORMAT': '%d.%m.%Y %H:%M',
+    'DATE_FORMAT': '%d.%m.%Y',
+    'TIME_FORMAT': '%H:%M'
 }
 
 SIMPLE_JWT = {
