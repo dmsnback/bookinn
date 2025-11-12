@@ -111,9 +111,15 @@ class BookingSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at',)
 
     def validate(self, data):
-        check_in = data.get('check_in')
-        check_out = data.get('check_out')
-        room = data.get('room')
+        check_in = data.get(
+            'check_in',
+            getattr(self.instance, 'check_in', None)
+        )
+        check_out = data.get(
+            'check_out',
+            getattr(self.instance, 'check_out', None)
+        )
+        room = data.get('room', getattr(self.instance, 'room', None))
         if check_in < date.today():
             raise serializers.ValidationError(
                 'Дата заезда не должна быть раньше текущей даты'
@@ -123,12 +129,11 @@ class BookingSerializer(serializers.ModelSerializer):
                 'Дата выселения должна быть позже даты заезда.'
             )
         if not room.is_available:
-            raise serializers.ValidationError(
-                'Номер не доступен'
-            )
+            raise serializers.ValidationError('Номер не доступен')
         if not room.is_available_for_period(
             check_in,
-            check_out
+            check_out,
+            exclude_booking=self.instance
         ):
             raise serializers.ValidationError(
                 'Номер уже забронирован на этот период'
@@ -138,3 +143,11 @@ class BookingSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['status'] = 'booked'
         return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        '''При PATCH обязательно передать status, проблема пока не решена'''
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
