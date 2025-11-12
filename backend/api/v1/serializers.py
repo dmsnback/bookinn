@@ -96,6 +96,8 @@ class RoomSerializer(serializers.ModelSerializer):
 
 class BookingSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    total_days = serializers.StringRelatedField()
+    total_price = serializers.StringRelatedField()
 
     class Meta:
         model = Booking
@@ -105,10 +107,15 @@ class BookingSerializer(serializers.ModelSerializer):
             'room',
             'check_in',
             'check_out',
+            'total_days',
+            'total_price',
             'status',
             'created_at'
         )
-        read_only_fields = ('created_at',)
+        read_only_fields = ('id', 'created_at', 'total_days', 'total_price')
+
+    def get_total_days(self, obj):
+        return
 
     def validate(self, data):
         check_in = data.get(

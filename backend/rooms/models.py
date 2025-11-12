@@ -187,11 +187,19 @@ class Booking(models.Model):
 
     @property
     def total_price(self):
-        """Расчет стоймости проживантя"""
+        """Расчет стоймости проживания"""
         if self.check_out <= self.check_in:
             return 0
         days = (self.check_out - self.check_in).days
         return days * self.room.price
+
+    @property
+    def total_days(self):
+        """Расчет количества дней бронирования"""
+        if self.check_out <= self.check_in:
+            return 0
+        days = (self.check_out - self.check_in).days
+        return days
 
     def clean(self):
         '''Валидация на уровне модели'''
