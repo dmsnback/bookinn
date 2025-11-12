@@ -21,6 +21,8 @@ class BookingAdmin(admin.ModelAdmin):
         'room',
         'check_in',
         'check_out',
+        'total_days_display',
+        'total_price_display',
         'status',
         'created_at',
     )
@@ -29,6 +31,14 @@ class BookingAdmin(admin.ModelAdmin):
     list_filter = ('status', 'room', 'user')
     list_display_links = ('room',)
     empty_value_display = 'Не задано'
+
+    def total_days_display(self, obj):
+        return obj.total_days
+    total_days_display.short_description = 'Количество дней бронирования'
+
+    def total_price_display(self, obj):
+        return obj.total_price
+    total_price_display.short_description = 'Полная стоймость бронирования'
 
 
 class RoomAdmin(admin.ModelAdmin):
