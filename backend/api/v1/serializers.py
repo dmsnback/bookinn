@@ -21,7 +21,16 @@ class RoomTypeSerializer(serializers.ModelSerializer):
         ]
 
 
-class RoomImageSerializer(serializers.ModelSerializer):
+class RoomImageReadSerializer(serializers.ModelSerializer):
+    room = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = RoomImage
+        fields = ('room', 'image')
+        read_only_fields = ('id',)
+
+
+class RoomImageWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RoomImage
@@ -29,7 +38,26 @@ class RoomImageSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'uploaded_at')
 
 
-class RoomSerializer(serializers.ModelSerializer):
+class RoomReadSerializer(serializers.ModelSerializer):
+    room_type = RoomTypeSerializer(read_only=True)
+    images = RoomImageReadSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Room
+        fields = (
+            'id',
+            'title',
+            'description',
+            'room_type',
+            'is_available',
+            'price',
+            'capacity',
+            'number_of_rooms',
+            'images'
+        )
+
+
+class RoomWriteSerializer(serializers.ModelSerializer):
     room_type = RoomTypeSerializer(read_only=True)
     room_type_id = serializers.PrimaryKeyRelatedField(
         queryset=RoomType.objects.all(),
@@ -42,7 +70,7 @@ class RoomSerializer(serializers.ModelSerializer):
         required=False,
         help_text='Добавьте фото для номеера'
     )
-    images = RoomImageSerializer(many=True, read_only=True)
+    images = RoomImageWriteSerializer(many=True, read_only=True)
 
     class Meta:
         model = Room
@@ -94,10 +122,31 @@ class RoomSerializer(serializers.ModelSerializer):
         return instance
 
 
-class BookingSerializer(serializers.ModelSerializer):
+class BookingReadSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+    room = serializers.StringRelatedField(read_only=True)
+    total_days = serializers.StringRelatedField(read_only=True)
+    total_price = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Booking
+        fields = (
+            'id',
+            'user',
+            'room',
+            'check_in',
+            'check_out',
+            'total_days',
+            'total_price',
+            'status',
+            'created_at'
+        )
+
+
+class BookingWriteSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    total_days = serializers.StringRelatedField()
-    total_price = serializers.StringRelatedField()
+    total_days = serializers.StringRelatedField(read_only=True)
+    total_price = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Booking
@@ -113,9 +162,6 @@ class BookingSerializer(serializers.ModelSerializer):
             'created_at'
         )
         read_only_fields = ('id', 'created_at', 'total_days', 'total_price')
-
-    def get_total_days(self, obj):
-        return
 
     def validate(self, data):
         check_in = data.get(
