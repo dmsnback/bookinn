@@ -3,7 +3,7 @@ from datetime import date
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from rooms.models import Booking, Room, RoomImage,  RoomType
+from rooms.models import Booking, Room, RoomImage, RoomType
 
 
 class RoomTypeSerializer(serializers.ModelSerializer):
@@ -71,6 +71,7 @@ class RoomWriteSerializer(serializers.ModelSerializer):
         help_text='Добавьте фото для номеера'
     )
     images = RoomImageWriteSerializer(many=True, read_only=True)
+    is_available = serializers.BooleanField(default=True)
 
     class Meta:
         model = Room

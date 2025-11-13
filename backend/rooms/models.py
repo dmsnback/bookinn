@@ -11,13 +11,6 @@ from rooms.utils import room_image_upload_path
 User = get_user_model()
 
 
-# ROOM_TYPE_CHOICES = (
-#     ('Standart', 'Стандарт'),
-#     ('Luxury', 'Люкс'),
-#     ('President', 'Президент'),
-# )
-
-
 STATUS_ROOM_CHOICES = (
     ('checked_out', 'Выселен'),
     ('checked_in', 'Заселен'),
