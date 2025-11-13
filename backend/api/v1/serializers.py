@@ -41,6 +41,7 @@ class RoomImageWriteSerializer(serializers.ModelSerializer):
 class RoomReadSerializer(serializers.ModelSerializer):
     room_type = RoomTypeSerializer(read_only=True)
     images = RoomImageReadSerializer(many=True, read_only=True)
+    is_available = serializers.SerializerMethodField()
 
     class Meta:
         model = Room
@@ -55,6 +56,11 @@ class RoomReadSerializer(serializers.ModelSerializer):
             'number_of_rooms',
             'images'
         )
+
+    def get_is_available(self, obj):
+        if obj.is_available:
+            return 'Номер доступен'
+        return 'Номер недоступен'
 
 
 class RoomWriteSerializer(serializers.ModelSerializer):
