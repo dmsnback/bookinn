@@ -3,9 +3,9 @@ from rest_framework.routers import DefaultRouter
 
 from api.v1.views import (
     BookingViewSet,
-    RoomViewSet,
     RoomImageViewSet,
-    RoomTypeViewSet
+    RoomTypeViewSet,
+    RoomViewSet,
 )
 
 

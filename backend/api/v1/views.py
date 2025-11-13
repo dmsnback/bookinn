@@ -4,10 +4,13 @@ from rest_framework import filters, permissions, viewsets
 from rooms.models import Booking, Room, RoomImage, RoomType
 from api.v1.permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
 from api.v1.serializers import (
-    BookingSerializer,
-    RoomSerializer,
-    RoomImageSerializer,
-    RoomTypeSerializer
+    BookingReadSerializer,
+    BookingWriteSerializer,
+    RoomImageReadSerializer,
+    RoomImageWriteSerializer,
+    RoomReadSerializer,
+    RoomTypeSerializer,
+    RoomWriteSerializer,
 )
 
 
@@ -21,12 +24,17 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
 
 class RoomImageViewSet(viewsets.ModelViewSet):
     queryset = RoomImage.objects.all()
-    serializer_class = RoomImageSerializer
+    serializer_class = RoomImageWriteSerializer
     permission_classes = (permissions.IsAdminUser,)
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return RoomImageReadSerializer
+        return RoomImageWriteSerializer
 
 
 class RoomViewSet(viewsets.ModelViewSet):
-    serializer_class = RoomSerializer
+    serializer_class = RoomWriteSerializer
     permission_classes = (permissions.AllowAny, IsAdminOrReadOnly)
     filter_backends = (
         DjangoFilterBackend,
@@ -49,6 +57,11 @@ class RoomViewSet(viewsets.ModelViewSet):
         'capacity'
     )
 
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return RoomReadSerializer
+        return RoomWriteSerializer
+
     def get_queryset(self):
         if self.request.user.is_staff or self.request.user.is_superuser:
             return Room.objects.all()
@@ -57,7 +70,8 @@ class RoomViewSet(viewsets.ModelViewSet):
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
-    serializer_class = BookingSerializer
+    serializer_class = BookingWriteSerializer
+
     permission_classes = (permissions.IsAuthenticated, IsOwnerOrAdmin)
     filter_backends = (
         DjangoFilterBackend,
@@ -67,6 +81,11 @@ class BookingViewSet(viewsets.ModelViewSet):
     filterset_fields = ('status', 'room', 'user')
     search_fields = ('status',)
     ordering_fields = ('status', 'check_in', 'check_out')
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return BookingReadSerializer
+        return BookingWriteSerializer
 
     def get_queryset(self):
         if self.request.user.is_staff or self.request.user.is_superuser:
