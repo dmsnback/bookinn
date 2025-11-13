@@ -5,7 +5,7 @@ from api.v1.views import (
     BookingViewSet,
     RoomImageViewSet,
     RoomTypeViewSet,
-    RoomViewSet,
+    RoomViewSet
 )
 
 
