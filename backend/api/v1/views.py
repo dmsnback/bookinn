@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework import filters, permissions, viewsets
 
 from rooms.models import Booking, Room, RoomImage, RoomType
@@ -14,7 +15,15 @@ from api.v1.serializers import (
 )
 
 
+@extend_schema(
+    tags=['RoomType'],
+    summary='Управление типами номеров'
+)
 class RoomTypeViewSet(viewsets.ModelViewSet):
+    """Позволяет администратору создавать, изменять и удалять типы номеров,
+    например "Стандарт", "Люкс" и т.п.
+    Обычные пользователи могут только просматривать список.
+    """
     queryset = RoomType.objects.all()
     serializer_class = RoomTypeSerializer
     permission_classes = (permissions.IsAdminUser,)
@@ -22,6 +31,7 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
     ordering_fields = ('name',)
 
 
+@extend_schema(tags=['RoomImage'])
 class RoomImageViewSet(viewsets.ModelViewSet):
     queryset = RoomImage.objects.all()
     serializer_class = RoomImageWriteSerializer
@@ -33,7 +43,15 @@ class RoomImageViewSet(viewsets.ModelViewSet):
         return RoomImageWriteSerializer
 
 
+@extend_schema(
+    tags=['Room'],
+    summary='Работа с номерами',
+)
 class RoomViewSet(viewsets.ModelViewSet):
+    """Позволяет просматривать список доступных номеров,
+    а администраторам — добавлять и изменять номера.
+    Каждый номер связан с типом номера и может содержать фото.
+    """
     serializer_class = RoomWriteSerializer
     permission_classes = (permissions.AllowAny, IsAdminOrReadOnly)
     filter_backends = (
@@ -68,7 +86,14 @@ class RoomViewSet(viewsets.ModelViewSet):
         return Room.objects.filter(is_available=True)
 
 
+@extend_schema(
+    tags=['Booking'],
+    summary='Работа с бронированиями'
+)
 class BookingViewSet(viewsets.ModelViewSet):
+    """Пользователь может создавать, изменять и удалять свои бронирования.
+    Администратор может управлять всеми бронированиями.
+    """
     queryset = Booking.objects.all()
     serializer_class = BookingWriteSerializer
 
