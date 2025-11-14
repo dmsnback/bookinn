@@ -136,7 +136,19 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'BookInn API',
     'DESCRIPTION': 'API для бронирования номеров в отеле',
     'VERSION': '1.0.0',
+    'CONTACT': {
+        'name': 'Dmitry Titenkov',
+        'url': 'https://github.com/dmsnback',
+        'Telegram': '@dmsn_dmsn',
+    },
     'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        'filter': True,
+    },
+    'SECURITY': [
+        {'Bearer': {'type': 'apiKey', 'in': 'header', 'name': 'Authorization'}}
+    ],
+    'COMPONENT_SPLIT_PATCH': True,
     'COMPONENT_SPLIT_REQUEST': True,
 }
 

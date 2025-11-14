@@ -7,6 +7,9 @@ from rooms.models import Booking, Room, RoomImage, RoomType
 
 
 class RoomTypeSerializer(serializers.ModelSerializer):
+    """Сериализатор для типов номеров.
+    Позволяет Позволяет создавать, редактировать и удалять типы номеров.
+    """
 
     class Meta:
         model = RoomType
@@ -22,6 +25,9 @@ class RoomTypeSerializer(serializers.ModelSerializer):
 
 
 class RoomImageReadSerializer(serializers.ModelSerializer):
+    """Сериализатор для изображений.
+    Позволяет просматривать все загруженные изображения.
+    """
     room = serializers.StringRelatedField(read_only=True)
 
     class Meta:
@@ -31,7 +37,9 @@ class RoomImageReadSerializer(serializers.ModelSerializer):
 
 
 class RoomImageWriteSerializer(serializers.ModelSerializer):
-
+    """Сериализатор для изображений.
+    Позволяет создавать, редактировать и удалять изображения.
+    """
     class Meta:
         model = RoomImage
         fields = ('id', 'room', 'image', 'uploaded_at')
@@ -39,6 +47,9 @@ class RoomImageWriteSerializer(serializers.ModelSerializer):
 
 
 class RoomReadSerializer(serializers.ModelSerializer):
+    """Сериализатор для номеров.
+    Позволяет просматривать номера.
+    """
     room_type = RoomTypeSerializer(read_only=True)
     images = RoomImageReadSerializer(many=True, read_only=True)
     is_available = serializers.SerializerMethodField()
@@ -64,6 +75,9 @@ class RoomReadSerializer(serializers.ModelSerializer):
 
 
 class RoomWriteSerializer(serializers.ModelSerializer):
+    """Сериализатор для номеров.
+    Позволяет создавать, редактировать и удалять номера.
+    """
     room_type = RoomTypeSerializer(read_only=True)
     room_type_id = serializers.PrimaryKeyRelatedField(
         queryset=RoomType.objects.all(),
@@ -74,7 +88,7 @@ class RoomWriteSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(
         write_only=True,
         required=False,
-        help_text='Добавьте фото для номеера'
+        help_text='Добавьте фото для номера',
     )
     images = RoomImageWriteSerializer(many=True, read_only=True)
     is_available = serializers.BooleanField(default=True)
@@ -130,6 +144,9 @@ class RoomWriteSerializer(serializers.ModelSerializer):
 
 
 class BookingReadSerializer(serializers.ModelSerializer):
+    """Сериализатор для бронирований.
+    Позволяет просматривать брони номеров.
+    """
     user = serializers.StringRelatedField(read_only=True)
     room = serializers.StringRelatedField(read_only=True)
     total_days = serializers.StringRelatedField(read_only=True)
@@ -151,6 +168,9 @@ class BookingReadSerializer(serializers.ModelSerializer):
 
 
 class BookingWriteSerializer(serializers.ModelSerializer):
+    """Сериализатор для бронирований.
+    Позволяет создавать, редактировать и удалять брони номеров.
+    """
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     total_days = serializers.StringRelatedField(read_only=True)
     total_price = serializers.StringRelatedField(read_only=True)
