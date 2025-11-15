@@ -1,4 +1,4 @@
-name: Bookinn-app w orkflow
+name: Bookinn-app workflow
 
 on: [push]
 
@@ -18,6 +18,14 @@ jobs:
                 pip install black flake8 flake8-isort
                 pip install -r requirements.txt
 
-            - name: Test with black, flake8-isort and flake8
+            - name: Test with black
               run: |
-                python -m black isort flake8
+                python -m black
+
+            - name: Test with flake8-isort
+              run: |
+                python -m isort
+
+            - name: Test with flake8
+              run: |
+                python -m flake8
