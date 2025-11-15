@@ -3,29 +3,32 @@ name: Bookinn-app workflow
 on: [push]
 
 jobs:
-    tests:
-        runs-on: ubuntu-latest
+  lint:
+    runs-on: ubuntu-latest
 
-        steps:
-            - uses: actions/checkout@v2
-            - name: Set up Python
-              uses: actions/setup-python@v2
-              with:
-                python-version: 3.9
-            - name: Install dependencies
-              run: |
-                python -m pip install --upgrade pip
-                pip install black flake8 flake8-isort
-                pip install -r requirements.txt
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Test with black
-              run: |
-                python -m black
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
 
-            - name: Test with flake8-isort
-              run: |
-                python -m isort
+      - name: Install dependencies
+        run: |
+            python -m pip install --upgrade pip
+            pip install black flake8 flake8-isort
+            pip install -r requirements.txt
 
-            - name: Test with flake8
-              run: |
-                python -m flake8
+      - name: Test with black (check only)
+        run: |
+          python -m black . --check
+
+      - name: Test with flake8-isort (check only)
+        run: |
+          python -m isort . --check-only
+
+      - name: Test with flake8
+        run: |
+          flake8 . --count --statistics --show-source
