@@ -1,6 +1,8 @@
+import logging
+
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
-from rest_framework import filters, permissions, viewsets
+from rest_framework import filters, permissions, serializers, viewsets
 
 from api.v1.permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
 from api.v1.serializers import (
@@ -13,6 +15,9 @@ from api.v1.serializers import (
     RoomWriteSerializer,
 )
 from rooms.models import Booking, Room, RoomImage, RoomType
+
+
+logger = logging.getLogger('rooms')
 
 
 @extend_schema(tags=["RoomType"], summary="Управление типами номеров")
@@ -28,6 +33,15 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ("name",)
 
+    def get_queryset(self):
+        try:
+            queryset = RoomType.objects.all()
+            logger.info(f'Запрошены типы номеров, всего найдено: {queryset.count()}')
+            return queryset
+        except Exception as error:
+            logger.debug(f'Ошибка при получении типов номеров: {error}', exc_info=True)
+            return RoomType.objects.none()
+
 
 @extend_schema(tags=["RoomImage"])
 class RoomImageViewSet(viewsets.ModelViewSet):
@@ -36,9 +50,15 @@ class RoomImageViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAdminUser,)
 
     def get_serializer_class(self):
-        if self.action in ["list", "retrieve"]:
-            return RoomImageReadSerializer
-        return RoomImageWriteSerializer
+        try:
+            if self.action in ["list", "retrieve"]:
+                logger.debug(f'Используется RoomImageReadSerializer для действия {self.action}')
+                return RoomImageReadSerializer
+            logger.debug(f'Используется RoomImageWriteSerializer для действия {self.action}')
+            return RoomImageWriteSerializer
+        except Exception as error:
+            logger.error(f'Ошибка при выборе сериализатора для RoomImage: {error}', exc_info=True)
+            return RoomImageWriteSerializer
 
 
 @extend_schema(
@@ -66,14 +86,27 @@ class RoomViewSet(viewsets.ModelViewSet):
     )
 
     def get_serializer_class(self):
-        if self.action in ["list", "retrieve"]:
-            return RoomReadSerializer
-        return RoomWriteSerializer
+        try:
+            if self.action in ["list", "retrieve"]:
+                logger.debug(f'Используется RoomReadSerializer для действия {self.action}')
+                return RoomReadSerializer
+            logger.debug(f'Используется RoomWriteSerializer для действия {self.action}')
+            return RoomWriteSerializer
+        except Exception as error:
+            logger.error(f'Ошибка при выборе сериализатора для Room: {error}', exc_info=True)
+            return RoomWriteSerializer
 
     def get_queryset(self):
-        if self.request.user.is_staff or self.request.user.is_superuser:
-            return Room.objects.all()
-        return Room.objects.filter(is_available=True)
+        try:
+            if self.request.user.is_staff or self.request.user.is_superuser:
+                queryset = Room.objects.all()
+            else:
+                queryset = Room.objects.filter(is_available=True)
+            logger.debug(f'Запрошены номера, всего найдено: {queryset.count()}')
+            return queryset
+        except Exception as error:
+            logger.error(f'Ошибка при получении списка номеров: {error}', exc_info=True)
+            return Room.objects.none()
 
 
 @extend_schema(tags=["Booking"], summary="Работа с бронированиями")
@@ -92,14 +125,32 @@ class BookingViewSet(viewsets.ModelViewSet):
     ordering_fields = ("status", "check_in", "check_out")
 
     def get_serializer_class(self):
-        if self.action in ["list", "retrieve"]:
-            return BookingReadSerializer
-        return BookingWriteSerializer
+        try:
+            if self.action in ["list", "retrieve"]:
+                logger.debug(f'Используется BookingReadSerializer для действия {self.action}')
+                return BookingReadSerializer
+            logger.debug(f'Используется BookingWriteSerializer для действия {self.action}')
+            return BookingWriteSerializer
+        except Exception as error:
+            logger.error(f'Ошибка при выборе сериализатора для Booking: {error}', exc_info=True)
+            return BookingWriteSerializer
 
     def get_queryset(self):
-        if self.request.user.is_staff or self.request.user.is_superuser:
-            return Booking.objects.all()
-        return Booking.objects.filter(user=self.request.user)
+        try:
+            if self.request.user.is_staff or self.request.user.is_superuser:
+                queryset = Booking.objects.all()
+            else:
+                queryset = Booking.objects.filter(user=self.request.user)
+                logger.debug(f'Запрошены бронирования пользователем: {self.request.user}, найдеено бронирований: {queryset.count()}')
+            return queryset
+        except Exception as error:
+            logger.error(f'Ошибка при получении списка бронирований: {error}', exc_info=True)
+            return Booking.objects.none()
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        try:
+            serializer.save(user=self.request.user)
+            logger.info(f'Пользователь {self.request.user} создал бронирование для номера {serializer.instance.room}')
+        except Exception as error:
+            logger.error(f'Не удалось создать бронирование: {error}', exc_info=True)
+            raise serializers.ValidationError({'error': 'Не Удалось создать бронирование'})
