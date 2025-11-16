@@ -16,8 +16,7 @@ from api.v1.serializers import (
 )
 from rooms.models import Booking, Room, RoomImage, RoomType
 
-
-logger = logging.getLogger('rooms')
+logger = logging.getLogger("rooms")
 
 
 @extend_schema(tags=["RoomType"], summary="Управление типами номеров")
@@ -36,10 +35,10 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         try:
             queryset = RoomType.objects.all()
-            logger.info(f'Запрошены типы номеров, всего найдено: {queryset.count()}')
+            logger.info(f"Запрошены типы номеров, всего найдено: {queryset.count()}")
             return queryset
         except Exception as error:
-            logger.debug(f'Ошибка при получении типов номеров: {error}', exc_info=True)
+            logger.debug(f"Ошибка при получении типов номеров: {error}", exc_info=True)
             return RoomType.objects.none()
 
 
@@ -52,12 +51,18 @@ class RoomImageViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         try:
             if self.action in ["list", "retrieve"]:
-                logger.debug(f'Используется RoomImageReadSerializer для действия {self.action}')
+                logger.debug(
+                    f"Используется RoomImageReadSerializer для действия {self.action}"
+                )
                 return RoomImageReadSerializer
-            logger.debug(f'Используется RoomImageWriteSerializer для действия {self.action}')
+            logger.debug(
+                f"Используется RoomImageWriteSerializer для действия {self.action}"
+            )
             return RoomImageWriteSerializer
         except Exception as error:
-            logger.error(f'Ошибка при выборе сериализатора для RoomImage: {error}', exc_info=True)
+            logger.error(
+                f"Ошибка при выборе сериализатора для RoomImage: {error}", exc_info=True
+            )
             return RoomImageWriteSerializer
 
 
@@ -88,12 +93,16 @@ class RoomViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         try:
             if self.action in ["list", "retrieve"]:
-                logger.debug(f'Используется RoomReadSerializer для действия {self.action}')
+                logger.debug(
+                    f"Используется RoomReadSerializer для действия {self.action}"
+                )
                 return RoomReadSerializer
-            logger.debug(f'Используется RoomWriteSerializer для действия {self.action}')
+            logger.debug(f"Используется RoomWriteSerializer для действия {self.action}")
             return RoomWriteSerializer
         except Exception as error:
-            logger.error(f'Ошибка при выборе сериализатора для Room: {error}', exc_info=True)
+            logger.error(
+                f"Ошибка при выборе сериализатора для Room: {error}", exc_info=True
+            )
             return RoomWriteSerializer
 
     def get_queryset(self):
@@ -102,10 +111,10 @@ class RoomViewSet(viewsets.ModelViewSet):
                 queryset = Room.objects.all()
             else:
                 queryset = Room.objects.filter(is_available=True)
-            logger.debug(f'Запрошены номера, всего найдено: {queryset.count()}')
+            logger.debug(f"Запрошены номера, всего найдено: {queryset.count()}")
             return queryset
         except Exception as error:
-            logger.error(f'Ошибка при получении списка номеров: {error}', exc_info=True)
+            logger.error(f"Ошибка при получении списка номеров: {error}", exc_info=True)
             return Room.objects.none()
 
 
@@ -127,12 +136,18 @@ class BookingViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         try:
             if self.action in ["list", "retrieve"]:
-                logger.debug(f'Используется BookingReadSerializer для действия {self.action}')
+                logger.debug(
+                    f"Используется BookingReadSerializer для действия {self.action}"
+                )
                 return BookingReadSerializer
-            logger.debug(f'Используется BookingWriteSerializer для действия {self.action}')
+            logger.debug(
+                f"Используется BookingWriteSerializer для действия {self.action}"
+            )
             return BookingWriteSerializer
         except Exception as error:
-            logger.error(f'Ошибка при выборе сериализатора для Booking: {error}', exc_info=True)
+            logger.error(
+                f"Ошибка при выборе сериализатора для Booking: {error}", exc_info=True
+            )
             return BookingWriteSerializer
 
     def get_queryset(self):
@@ -141,16 +156,24 @@ class BookingViewSet(viewsets.ModelViewSet):
                 queryset = Booking.objects.all()
             else:
                 queryset = Booking.objects.filter(user=self.request.user)
-                logger.debug(f'Запрошены бронирования пользователем: {self.request.user}, найдеено бронирований: {queryset.count()}')
+                logger.debug(
+                    f"Запрошены бронирования пользователем: {self.request.user}, найдеено бронирований: {queryset.count()}"
+                )
             return queryset
         except Exception as error:
-            logger.error(f'Ошибка при получении списка бронирований: {error}', exc_info=True)
+            logger.error(
+                f"Ошибка при получении списка бронирований: {error}", exc_info=True
+            )
             return Booking.objects.none()
 
     def perform_create(self, serializer):
         try:
             serializer.save(user=self.request.user)
-            logger.info(f'Пользователь {self.request.user} создал бронирование для номера {serializer.instance.room}')
+            logger.info(
+                f"Пользователь {self.request.user} создал бронирование для номера {serializer.instance.room}"
+            )
         except Exception as error:
-            logger.error(f'Не удалось создать бронирование: {error}', exc_info=True)
-            raise serializers.ValidationError({'error': 'Не Удалось создать бронирование'})
+            logger.error(f"Не удалось создать бронирование: {error}", exc_info=True)
+            raise serializers.ValidationError(
+                {"error": "Не Удалось создать бронирование"}
+            )
