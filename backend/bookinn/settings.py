@@ -6,8 +6,10 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", default="supersecretkey")
+print(SECRET_KEY)
 
 DEBUG = True
 
@@ -58,12 +60,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "bookinn.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if os.getenv("DATABASE_TYPE") == "postgresql":
+    DATABASES = {
+        "default": {
+            "ENGINE": os.getenv("ENGINE", default="django.db.backends.postgresql"),
+            "NAME": os.getenv("NAME", default="postgres"),
+            "USER": os.getenv("USER", default="postgres"),
+            "PASSWORD": os.getenv("PASSWORD", default="postgres"),
+            "HOST": os.getenv("HOST", default="localhost"),
+            "PORT": os.getenv("PORT", default="5432"),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
