@@ -57,7 +57,6 @@ LOGGING = {
     },
 }
 
-
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", default="supersecretkey")
 print(SECRET_KEY)
@@ -115,10 +114,10 @@ if os.getenv("DATABASE_TYPE") == "postgresql":
     DATABASES = {
         "default": {
             "ENGINE": os.getenv("ENGINE", default="django.db.backends.postgresql"),
-            "NAME": os.getenv("NAME", default="postgres"),
-            "USER": os.getenv("USER", default="postgres"),
-            "PASSWORD": os.getenv("PASSWORD", default="postgres"),
-            "HOST": os.getenv("HOST", default="localhost"),
+            "NAME": os.getenv("POSTGRES_DB", default="postgres"),
+            "USER": os.getenv("POSTGRES_USER", default="postgres"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="postgres"),
+            "HOST": os.getenv("HOST", default="db"),
             "PORT": os.getenv("PORT", default="5432"),
         }
     }
