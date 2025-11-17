@@ -236,7 +236,7 @@ class BookingViewSet(viewsets.ModelViewSet):
             else:
                 queryset = Booking.objects.filter(user=self.request.user)
                 logger.debug(
-                    f"Запрошены бронирования пользователем: {self.request.user}, найдеено бронирований: {queryset.count()}"
+                    f"Запрошены бронирования пользователем: {self.request.user}, найдено бронирований: {queryset.count()}"
                 )
             return queryset
         except Exception as error:
