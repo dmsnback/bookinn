@@ -18,7 +18,6 @@ jobs:
       - name: Install dependencies
         run: |
             python -m pip install --upgrade pip
-            pip install black flake8 flake8-isort
             pip install -r ./backend/requirements.txt
 
       - name: Test with black (check only)
