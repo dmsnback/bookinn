@@ -14,11 +14,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "{levelname} {asctime} {module} {message}",
-            "style": "{",
-        },
-        "simple": {
-            "format": "{levelname} {message}",
+            "format": "{asctime} [{levelname}] {name}:{filename}:{lineno} - {message}",
             "style": "{",
         },
     },
@@ -28,16 +24,36 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
-        "file": {
+        "info_file": {
             "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": LOG_DIR / "django.log",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "django_info.log",
             "formatter": "verbose",
+            "maxBytes": 1024 * 1024 * 5,
+            "backupCount": 5,
+            "encoding": "utf-8",
+        },
+        "error_file": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "django_errors.log",
+            "formatter": "verbose",
+            "maxBytes": 1024 * 1024 * 2,
+            "backupCount": 10,
+            "encoding": "utf-8",
         },
     },
     "loggers": {
-        "django": {"handlers": ["console", "file"], "level": "INFO", "propagate": True},
-        "rooms": {"handlers": ["console", "file"], "level": "DEBUG", "propagate": False},
+        "django": {
+            "handlers": ["console", "error_file"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "rooms": {
+            "handlers": ["console", "info_file", "error_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
     },
 }
 
