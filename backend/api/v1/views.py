@@ -41,6 +41,31 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
             logger.debug(f"Ошибка при получении типов номеров: {error}", exc_info=True)
             return RoomType.objects.none()
 
+    def perform_create(self, serializer):
+        try:
+            serializer.save()
+            logger.info(f"Создан новый тип номера: {serializer.instance.name}")
+        except Exception as error:
+            logger.error(f"Ошибка при создании типа номера: {error}", exc_info=True)
+            raise serializers.ValidationError({"error": "Не удалось создать тип номера"})
+
+    def perform_update(self, serializer):
+        try:
+            serializer.save()
+            logger.info(f"Обновлеен тип номера: {serializer.instance.name}")
+        except Exception as error:
+            logger.error(f"Ошибка при обновлении типа номера: {error}", exc_info=True)
+            raise serializers.ValidationError({"error": "Не удалось обновить тип номера"})
+
+    def perform_destroy(self, instance):
+        try:
+            room_type_name = instance.name
+            instance.delete()
+            logger.info(f"Удален тип номера: {room_type_name}")
+        except Exception as error:
+            logger.error(f"Ошибка при удалении типа номера: {error}", exc_info=True)
+            raise serializers.ValidationError({"error": "Не удалось удалить тип номера"})
+
 
 @extend_schema(tags=["RoomImage"])
 class RoomImageViewSet(viewsets.ModelViewSet):
@@ -64,6 +89,35 @@ class RoomImageViewSet(viewsets.ModelViewSet):
                 f"Ошибка при выборе сериализатора для RoomImage: {error}", exc_info=True
             )
             return RoomImageWriteSerializer
+
+    def perform_create(self, serializer):
+        try:
+            serializer.save()
+            logger.info(
+                f"Загружена новая фотография id = {serializer.instance.id} для номера {serializer.instance.room}"
+            )
+        except Exception as error:
+            logger.error(f"Ошибка при загрузке фотогрвфии: {error}", exc_info=True)
+            raise serializers.ValidationError(
+                {"error": "Не удалось загрузить фотографию"}
+            )
+
+    def perform_update(self, serializer):
+        try:
+            serializer.save()
+            logger.info(f"Фотография обновлена id = {serializer.instance.id}")
+        except Exception as error:
+            logger.error(f"Ошибка при обновлении фотографии: {error}", exc_info=True)
+            raise serializers.ValidationError({"error": "Не удалось обновить фотографию"})
+
+    def perform_destroy(self, instance):
+        try:
+            image_name = instance.image
+            instance.delete()
+            logger.info(f"Фотография удалена: {image_name}")
+        except Exception as error:
+            logger.error(f"Ошибка при удалении фотографии: {error}", exc_info=True)
+            raise serializers.ValidationError({"error": "Не удалось удалить фотографию"})
 
 
 @extend_schema(
@@ -116,6 +170,31 @@ class RoomViewSet(viewsets.ModelViewSet):
         except Exception as error:
             logger.error(f"Ошибка при получении списка номеров: {error}", exc_info=True)
             return Room.objects.none()
+
+    def perform_create(self, serializer):
+        try:
+            serializer.save()
+            logger.info(f"Добавлен новый номер: {serializer.instance.title}")
+        except Exception as error:
+            logger.error(f"Ошибка при добавлении номера: {error}", exc_info=True)
+            raise serializers.ValidationError({"error": "Не удалось добавить номер"})
+
+    def perform_update(self, serializer):
+        try:
+            serializer.save()
+            logger.info(f"Номер обновлен {serializer.instance.title}")
+        except Exception as error:
+            logger.error(f"Ошибка при обновлении номера: {error}", exc_info=True)
+            raise serializers.ValidationError({"error": "Не удалось обновить номер"})
+
+    def perform_destroy(self, instance):
+        try:
+            room_name = instance.title
+            instance.delete()
+            logger.info(f"Номер {room_name} удален")
+        except Exception as error:
+            logger.error(f"Ошибка при удалении номера: {error}", exc_info=True)
+            raise serializers.ValidationError({"error": "Не удалось удалить номер"})
 
 
 @extend_schema(tags=["Booking"], summary="Работа с бронированиями")
@@ -170,10 +249,33 @@ class BookingViewSet(viewsets.ModelViewSet):
         try:
             serializer.save(user=self.request.user)
             logger.info(
-                f"Пользователь {self.request.user} создал бронирование для номера {serializer.instance.room}"
+                f"Пользователь {self.request.user} создал бронирование для номера: {serializer.instance.room}"
             )
         except Exception as error:
             logger.error(f"Не удалось создать бронирование: {error}", exc_info=True)
             raise serializers.ValidationError(
                 {"error": "Не Удалось создать бронирование"}
+            )
+
+    def perform_update(self, serializer):
+        try:
+            serializer.save(user=self.request.user)
+            logger.info(
+                f"Пользователь {self.request.user} обновил бронирование для номера: {serializer.instance.room}"
+            )
+        except Exception as error:
+            logger.error(f"Ошибка при обновлении бронирования: {error}", exc_info=True)
+            raise serializers.ValidationError(
+                {"error": "Не удалось обновить бронирование"}
+            )
+
+    def perform_destroy(self, instance):
+        try:
+            booking_for_room = instance.room
+            instance.delete()
+            logger.info(f"Бронирование для номера {booking_for_room} удалено")
+        except Exception as error:
+            logger.error(f"Ошибка при удалении бронирования: {error}", exc_info=True)
+            raise serializers.ValidationError(
+                {"error": "Не удалось удалить бронирование"}
             )

@@ -33,7 +33,7 @@ class RoomImageReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RoomImage
-        fields = ("room", "image")
+        fields = ("id", "room", "image")
         read_only_fields = ("id",)
 
 
