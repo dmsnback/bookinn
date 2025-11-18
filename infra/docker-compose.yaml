@@ -8,8 +8,7 @@ services:
     env_file:
       - ./.env
   backend:
-    build:
-      context: ../backend
+    image: dmsn/bookinn:latest
     restart: always
 
     volumes:
