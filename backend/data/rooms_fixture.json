@@ -1,0 +1,175 @@
+[
+  {
+    "model": "rooms.roomtype",
+    "pk": 1,
+    "fields": {
+      "name": "Стандарт",
+      "description": "Базовый тип номера, подходит для короткого проживания."
+    }
+  },
+  {
+    "model": "rooms.roomtype",
+    "pk": 2,
+    "fields": {
+      "name": "Комфорт",
+      "description": "Чуть просторнее стандарта, улучшенная мебель."
+    }
+  },
+  {
+    "model": "rooms.roomtype",
+    "pk": 3,
+    "fields": {
+      "name": "Семейный",
+      "description": "Подходит для 3–4 гостей, включает две комнаты."
+    }
+  },
+  {
+    "model": "rooms.roomtype",
+    "pk": 4,
+    "fields": {
+      "name": "Апартаменты",
+      "description": "Самые просторные номера, включают кухню и гостиную."
+    }
+  },
+
+  {
+    "model": "rooms.room",
+    "pk": 1,
+    "fields": {
+      "title": "Стандарт 101",
+      "description": "Номер на одного гостя, базовое оснащение.",
+      "room_type": 1,
+      "is_available": true,
+      "price": "2200.00",
+      "capacity": 1,
+      "number_of_rooms": 1,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "rooms.room",
+    "pk": 2,
+    "fields": {
+      "title": "Стандарт 102",
+      "description": "Светлый номер с рабочим столом.",
+      "room_type": 1,
+      "is_available": true,
+      "price": "2300.00",
+      "capacity": 1,
+      "number_of_rooms": 1,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "rooms.room",
+    "pk": 3,
+    "fields": {
+      "title": "Стандарт 103",
+      "description": "Две раздельные кровати, удобно для сотрудников.",
+      "room_type": 1,
+      "is_available": true,
+      "price": "2600.00",
+      "capacity": 2,
+      "number_of_rooms": 1,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "rooms.room",
+    "pk": 4,
+    "fields": {
+      "title": "Комфорт 201",
+      "description": "Увеличенная площадь, удобная зона отдыха.",
+      "room_type": 2,
+      "is_available": true,
+      "price": "3100.00",
+      "capacity": 2,
+      "number_of_rooms": 1,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "rooms.room",
+    "pk": 5,
+    "fields": {
+      "title": "Комфорт 202",
+      "description": "Большое окно и удобное рабочее место.",
+      "room_type": 2,
+      "is_available": true,
+      "price": "3200.00",
+      "capacity": 2,
+      "number_of_rooms": 1,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "rooms.room",
+    "pk": 6,
+    "fields": {
+      "title": "Комфорт 203",
+      "description": "Улучшенная мебель, большой шкаф.",
+      "room_type": 2,
+      "is_available": true,
+      "price": "3250.00",
+      "capacity": 2,
+      "number_of_rooms": 1,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "rooms.room",
+    "pk": 7,
+    "fields": {
+      "title": "Семейный 301",
+      "description": "Две комнаты, рассчитан на 3 гостей.",
+      "room_type": 3,
+      "is_available": true,
+      "price": "4200.00",
+      "capacity": 3,
+      "number_of_rooms": 2,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "rooms.room",
+    "pk": 8,
+    "fields": {
+      "title": "Семейный 302",
+      "description": "Две комнаты, большой диван и рабочая зона.",
+      "room_type": 3,
+      "is_available": true,
+      "price": "4400.00",
+      "capacity": 4,
+      "number_of_rooms": 2,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "rooms.room",
+    "pk": 9,
+    "fields": {
+      "title": "Апартаменты 401",
+      "description": "Гостиная, кухня, подходит для длительного проживания.",
+      "room_type": 4,
+      "is_available": true,
+      "price": "5500.00",
+      "capacity": 3,
+      "number_of_rooms": 2,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "rooms.room",
+    "pk": 10,
+    "fields": {
+      "title": "Апартаменты 402",
+      "description": "Апартаменты на верхнем этаже, три комнаты.",
+      "room_type": 4,
+      "is_available": true,
+      "price": "6000.00",
+      "capacity": 4,
+      "number_of_rooms": 3,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  }
+]
