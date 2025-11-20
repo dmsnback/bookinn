@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-# Use this script to test if a given TCP host/port are available
+# Скрипт ждёт, пока база на станет доступна, а потом запускает Django.
 
 WAITFORIT_cmdname=${0##*/}
 
