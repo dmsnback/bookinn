@@ -1,0 +1,33 @@
+name: Bookinn workflow
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+            python -m pip install --upgrade pip
+            pip install -r ./backend/requirements.txt
+
+      - name: Test with black (check only)
+        run: |
+          python -m black . --check
+
+      - name: Test with flake8-isort (check only)
+        run: |
+          python -m isort . --check-only
+
+      - name: Test with flake8
+        run: |
+          flake8 . --count --statistics --show-source
